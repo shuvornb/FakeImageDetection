@@ -23,7 +23,7 @@ if __name__ == '__main__':
     train_batches = train_data_generator.flow_from_directory(
         train_path,
         target_size=(256, 256),
-        batch_size=128,
+        batch_size=32,
         color_mode='rgb',
         class_mode='binary'
     )
@@ -35,7 +35,7 @@ if __name__ == '__main__':
     test_batches = test_data_generator.flow_from_directory(
         test_path,
         target_size=(256, 256),
-        batch_size=32,
+        batch_size=16,
         color_mode='rgb',
         class_mode='binary',
         shuffle=True
@@ -46,6 +46,7 @@ if __name__ == '__main__':
     model.compile(optimizer=optimizers.Adam(learning_rate=0.001), loss='mean_squared_error', metrics=['accuracy'])
     early_stopping = callbacks.EarlyStopping(
         monitor="val_loss",
+        min_delta=0.05,
         patience=10,
         verbose=1,
         mode="auto"
@@ -54,10 +55,10 @@ if __name__ == '__main__':
     # train the model
     history = model.fit(
         train_batches,
-        steps_per_epoch=413,
+        steps_per_epoch=1500,
         epochs=50,
         validation_data=test_batches,
-        validation_steps=108,
+        validation_steps=200,
         callbacks=[early_stopping]
     )
 
