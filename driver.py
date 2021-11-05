@@ -4,12 +4,14 @@ import click
 import fakeimagedetection.models as models
 import fakeimagedetection.util as util
 import fakeimagedetection.train as train 
+import fakeimagedetection.test as test
 
 @click.command()
 @click.option('--mode', default='train', help='Execution mode')
 @click.option('--model_name', default='meso4', help='Model name')
+@click.option('--test_model_path', default=None, help='Trained model path')
 @click.option('--data_path', default='fakeimagedetection/sample_data/deepfake', help='Data folder path')
-def run(mode, model_name, data_path):
+def run(mode, model_name, test_model_path, data_path):
     if mode.lower() == 'train':
         config = toml.load('config.toml')
         
@@ -44,8 +46,14 @@ def run(mode, model_name, data_path):
         plot_data = [history.history['loss'], history.history['val_loss']]
         util.plot_mutliple_lines(plot_data, 'model loss', 'epoch', 'loss', ['train', 'validation'])
 
-    elif model.lower() == 'test':
-        pass
+    elif mode.lower() == 'test':
+        config = toml.load('config.toml')
+        test_path = data_path + '/test'
+        test_batches = util.batch_data(test_path, (config['image_height'], config['image_width']), config['test_batch_size'])
+        if not test_model_path:
+            print('No test model path provided. Terminating program')
+        test_score = test.test_model(test_model_path, test_batches)
+        print('Test accuracy:', test_score[1])
     elif mode.lower() == 'predict':
         pass
     else:
