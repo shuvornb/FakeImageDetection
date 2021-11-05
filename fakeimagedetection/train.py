@@ -17,8 +17,10 @@ def train_model(model, train_batches, valid_batches, config, verbose=1):
     )
     history = model.fit(
         train_batches,
+        steps_per_epoch=config["steps_per_epoch"],
         epochs=config["epochs"],
         validation_data=valid_batches,
+        validation_steps=config["validation_steps"],
         callbacks=[early_stopping],
     )
     return model, history

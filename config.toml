@@ -9,3 +9,5 @@ test_batch_size = 16
 train_batch_size = 32
 image_height = 256
 image_width = 256
+steps_per_epoch=1500
+validation_steps = 200
