@@ -133,3 +133,17 @@ def resnet():
     pretrained = models.Model(inputs=base_model.input, outputs=x)
     pretrained.summary()
     return pretrained
+
+def load_model(model_name):
+    if model_name.lower() == 'meso4':
+        model = meso4_model()
+    elif model_name.lower() == 'xception':
+        model = xception()
+    elif model_name.lower() == 'resnet':
+        model = resnet()
+    elif model_name.lower() == 'vgg':
+        model = vgg()
+    else:
+        print('Unknown model. Terminating program')
+        return False
+    return model
