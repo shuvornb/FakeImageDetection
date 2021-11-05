@@ -26,14 +26,20 @@ def batch_data(
     return batches
 
 
-def plot_mutliple_lines(data, title, x_label, y_label, legend):
+def plot_mutliple_lines(data, title, x_label, y_label, legend, save=False, model_name="", data_name=""):
     for i in range(len(data)):
         plt.plot(data[i])
     plt.title(title)
     plt.ylabel(y_label)
     plt.xlabel(x_label)
     plt.legend(legend)
+    if save:
+        file_name = generate_date_name(model_name + "_" + data_name + "_" + y_label)
+        current_folder = os.path.dirname(os.path.realpath(__file__))
+        file_path = current_folder + "/results/" + file_name + ".png"
+        plt.savefig(file_path)
     plt.show()
+
 
 
 def generate_date_name(name):
@@ -54,3 +60,4 @@ def stats_to_csv(dictionary, model_name, data_name):
     file = open(current_folder + "/results/" + file_name + ".csv", "w")
     data_frame.to_csv(file)
     file.close()
+

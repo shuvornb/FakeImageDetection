@@ -41,10 +41,10 @@ def run(mode, model_name, test_model_path, data_path):
         print('Validation accuracy:', valid_score[1])
 
         plot_data = [history.history['accuracy'], history.history['val_accuracy']]
-        util.plot_mutliple_lines(plot_data, 'model accuracy', 'epoch', 'accuracy', ['train', 'validation'])
+        util.plot_mutliple_lines(plot_data, 'model accuracy', 'epoch', 'accuracy', ['train', 'validation'], True, model_name, data_path.split('/')[-1])
         
         plot_data = [history.history['loss'], history.history['val_loss']]
-        util.plot_mutliple_lines(plot_data, 'model loss', 'epoch', 'loss', ['train', 'validation'])
+        util.plot_mutliple_lines(plot_data, 'model loss', 'epoch', 'loss', ['train', 'validation'], True, model_name, data_path.split('/')[-1])
 
     elif mode.lower() == 'test':
         config = toml.load('config.toml')
