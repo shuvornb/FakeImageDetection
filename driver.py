@@ -55,8 +55,11 @@ def run(mode, model_name, test_model_path, data_path):
     elif mode.lower() == 'test':
         config = toml.load('config.toml')
         test_path = data_path + '/test'
-        test_batches = util.batch_data(test_path, (config['image_height'], config['image_width']),
-                                       config['test_batch_size'])
+        test_batches = util.batch_data_v2(test_path, config['test_batch_size'], scale=4)
+# =============================================================================
+#         test_batches = util.batch_data(test_path, (config['image_height'], config['image_width']),
+#                                        config['test_batch_size'])
+# =============================================================================
         if not test_model_path:
             print('No test model path provided. Terminating program')
         test_score = test.test_model(test_model_path, test_batches)
