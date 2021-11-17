@@ -36,14 +36,22 @@ def meso4_model():
 
 def xception():
     base_model = tf.keras.applications.xception.Xception(
-        include_top=False, weights="imagenet", input_shape=(256, 256, 3)
+        include_top=False, weights="imagenet", input_shape=(256, 256, 3), pooling='avg'
     )
+    
+    base_model.trainable = False
+    for layer in base_model.layers:
+        if 'conv5' in layer.name:
+            layer.trainable = True
+        else:
+            layer.trainable = False
 
     x = base_model.output
     x = layers.Flatten()(x)
+    
     x = layers.BatchNormalization()(x)
     x = layers.Dense(
-        units=2000,  # was 256
+        units=1024,  # was 256
         activation="relu",
         # kernel_initializer=initializer
     )(x)
@@ -51,12 +59,13 @@ def xception():
     x = layers.Dropout(0.4)(x)  # was 0.4
     x = layers.BatchNormalization()(x)
     x = layers.Dense(
-        units=1000,  # was 128
+        units=512,  # was 128
         activation="relu",
         # kernel_initializer=initializer
     )(x)
 
     x = layers.Dropout(0.4)(x)  # was 0.4
+    
     x = layers.Dense(
         units=1,  # was 10
         activation="sigmoid",
@@ -74,14 +83,20 @@ def xception():
 
 def vgg():
     base_model = tf.keras.applications.vgg19.VGG19(
-        input_shape=(256, 256, 3), include_top=False, weights="imagenet"
+        input_shape=(256, 256, 3), include_top=False, weights="imagenet", pooling='avg'
     )
-
+    base_model.trainable = False
+    for layer in base_model.layers:
+        if 'conv5' in layer.name:
+            layer.trainable = True
+        else:
+            layer.trainable = False
     x = base_model.output
     x = layers.Flatten()(x)
+    
     x = layers.BatchNormalization()(x)
     x = layers.Dense(
-        units=2000,  # was 256
+        units=1024,  # was 256
         activation="relu",
         # kernel_initializer=initializer
     )(x)
@@ -89,12 +104,13 @@ def vgg():
     x = layers.Dropout(0.4)(x)  # was 0.4
     x = layers.BatchNormalization()(x)
     x = layers.Dense(
-        units=1000,  # was 128
+        units=512,  # was 128
         activation="relu",
         # kernel_initializer=initializer
     )(x)
 
     x = layers.Dropout(0.4)(x)  # was 0.4
+    
     x = layers.Dense(
         units=1,  # was 10
         activation="sigmoid",
@@ -112,14 +128,21 @@ def vgg():
 
 def resnet():
     base_model = tf.keras.applications.resnet.ResNet50(
-        include_top=False, input_shape=(256, 256, 3), weights="imagenet"
+        include_top=False, input_shape=(256, 256, 3), weights="imagenet", pooling='avg'
     )
+
+    base_model.trainable = False
+    for layer in base_model.layers:
+        if 'conv5' in layer.name:
+            layer.trainable = True
+        else:
+            layer.trainable = False
 
     x = base_model.output
     x = layers.Flatten()(x)
     x = layers.BatchNormalization()(x)
     x = layers.Dense(
-        units=2000,  # was 256
+        units=1024,  # was 256
         activation="relu",
         # kernel_initializer=initializer
     )(x)
@@ -127,7 +150,7 @@ def resnet():
     x = layers.Dropout(0.4)(x)  # was 0.4
     x = layers.BatchNormalization()(x)
     x = layers.Dense(
-        units=1000,  # was 128
+        units=512,  # was 128
         activation="relu",
         # kernel_initializer=initializer
     )(x)
