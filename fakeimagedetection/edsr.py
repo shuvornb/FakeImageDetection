@@ -293,7 +293,7 @@ def load_edsr(device, n_resblocks=16, n_feats=64, scale=4, model_details=True):
         "save_gt": False,
         "save_models": False,
         "save_results": True,
-        "scale": [scale],
+        "scale": [4],
         "seed": 1,
         "self_ensemble": False,
         "shift_mean": True,

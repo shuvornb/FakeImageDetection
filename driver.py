@@ -5,14 +5,15 @@ import fakeimagedetection.models as models
 import fakeimagedetection.util as util
 import fakeimagedetection.train as train
 import fakeimagedetection.test as test
-
+import shutil
 
 @click.command()
 @click.option('--mode', default='train', help='Execution mode')
 @click.option('--model_name', default='meso4', help='Model name')
 @click.option('--test_model_path', default=None, help='Trained model path')
 @click.option('--data_path', default='fakeimagedetection/sample_data/deepfake', help='Data folder path')
-def run(mode, model_name, test_model_path, data_path):
+@click.option('--upsample', default=False, help='Upsample images 4 times')
+def run(mode, model_name, test_model_path, data_path, upsample):
     if mode.lower() == 'train':
         config = toml.load('config.toml')
 
@@ -55,15 +56,22 @@ def run(mode, model_name, test_model_path, data_path):
     elif mode.lower() == 'test':
         config = toml.load('config.toml')
         test_path = data_path + '/test'
-        test_batches = util.batch_data_v2(test_path, config['test_batch_size'], scale=4)
-# =============================================================================
-#         test_batches = util.batch_data(test_path, (config['image_height'], config['image_width']),
-#                                        config['test_batch_size'])
-# =============================================================================
+        if upsample:
+            upsampled_path = util.get_upsampled(test_path)
+            test_path = upsampled_path
+            
+        test_batches = util.batch_data(test_path, (config['image_height'], config['image_width']),
+                                       config['test_batch_size'])
+
         if not test_model_path:
             print('No test model path provided. Terminating program')
         test_score = test.test_model(test_model_path, test_batches)
         print('Test accuracy:', test_score[1])
+        if upsample:
+            try:
+                shutil.rmtree(test_path)
+            except OSError as e:
+                print("Error: %s : %s" % (test_path, e.strerror))
     elif mode.lower() == 'predict':
         pass
     else:
