@@ -1,15 +1,14 @@
-from tensorflow.keras.preprocessing.image import ImageDataGenerator
-import matplotlib.pyplot as plt
-import matplotlib.image
-import time
-import tensorflow as tf
-import pandas as pd
 import os
-import fakeimagedetection.edsr as edsr
-import torch
+import time
 import cv2
-import numpy as np
-import tqdm
+import matplotlib.pyplot as plt
+import pandas as pd
+import tensorflow as tf
+import torch
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+import fakeimagedetection.edsr as edsr
+
+
 def upsample_image(image, scale=4):
     model = edsr.load_edsr(device="cuda", scale=scale)
     image = image.to("cuda")
