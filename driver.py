@@ -7,6 +7,7 @@ import fakeimagedetection.train as train
 import fakeimagedetection.test as test
 import shutil
 
+
 @click.command()
 @click.option('--mode', default='train', help='Execution mode')
 @click.option('--model_name', default='meso4', help='Model name')
@@ -59,7 +60,7 @@ def run(mode, model_name, test_model_path, data_path, upsample):
         if upsample:
             upsampled_path = util.get_upsampled(test_path)
             test_path = upsampled_path
-            
+
         test_batches = util.batch_data(test_path, (config['image_height'], config['image_width']),
                                        config['test_batch_size'])
 
