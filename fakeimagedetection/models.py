@@ -1,5 +1,8 @@
 from tensorflow.keras import layers, models
 import tensorflow as tf
+from keras.layers import Dense, GlobalAveragePooling2D
+from keras.models import Model
+from keras.applications.xception import Xception, preprocess_input
 
 
 def meso4_model():
@@ -35,6 +38,26 @@ def meso4_model():
 
 
 def xception():
+    base_model = Xception(
+        include_top=False,
+        weights='imagenet',
+        input_shape=(256, 256, 3))
+
+    # create a custom top classifier
+    x = base_model.output
+    x = GlobalAveragePooling2D()(x)
+    x = Dense(1024, activation='relu')(x)
+    predictions = Dense(2, activation='softmax')(x)
+    model = Model(inputs=base_model.inputs, outputs=predictions)
+
+    # Train only the top classifier
+    # freeze the body layers
+    for layer in base_model.layers:
+        layer.trainable = False
+    return model
+
+
+def xception_v2():
     base_model = tf.keras.applications.xception.Xception(
         include_top=False, weights="imagenet", input_shape=(256, 256, 3), pooling='avg'
     )
