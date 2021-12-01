@@ -7,6 +7,11 @@ import tensorflow as tf
 import torch
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import fakeimagedetection.edsr as edsr
+import imghdr
+from tensorflow.keras.utils import to_categorical
+import numpy as np
+from keras.preprocessing import image
+from keras.applications.xception import preprocess_input
 
 
 def upsample_image(image, scale=4):
@@ -62,6 +67,25 @@ def get_upsampled(data_path):
     return upsampled_path
 
 
+def generate_from_paths_and_labels(input_paths, labels, batch_size, input_size=(256, 256)):
+    num_samples = len(input_paths)
+    while 1:
+        perm = np.random.permutation(num_samples)
+        input_paths = input_paths[perm]
+        labels = labels[perm]
+        for i in range(0, num_samples, batch_size):
+            inputs = list(map(
+                lambda x: image.load_img(x, target_size=input_size),
+                input_paths[i:i+batch_size]
+            ))
+            inputs = np.array(list(map(
+                lambda x: image.img_to_array(x),
+                inputs
+            )))
+            inputs = preprocess_input(inputs)
+            yield inputs, labels[i:i + batch_size]
+
+
 def batch_data(
         folder_path,
         target_size,
@@ -82,6 +106,36 @@ def batch_data(
     return batches
 
 
+def batch_data_xception(dataset_root):
+    classes = ["fake", "real"]
+    num_classes = len(classes)
+
+    # make input_paths and labels
+    input_paths, labels = [], []
+    for class_name in os.listdir(dataset_root):
+        class_root = os.path.join(dataset_root, class_name)
+        class_id = classes.index(class_name)
+        for path in os.listdir(class_root):
+            path = os.path.join(class_root, path)
+            if imghdr.what(path) is None:
+                # this is not an image file
+                continue
+            input_paths.append(path)
+            labels.append(class_id)
+
+    # convert to one-hot-vector format
+    labels = to_categorical(labels, num_classes=num_classes)
+
+    # convert to numpy array
+    input_paths = np.array(input_paths)
+
+    # shuffle dataset
+    perm = np.random.permutation(len(input_paths))
+    labels = labels[perm]
+    input_paths = input_paths[perm]
+    return input_paths, labels
+
+
 def plot_mutliple_lines(data, title, x_label, y_label, legend, save=False, model_name="", data_name=""):
     for i in range(len(data)):
         plt.plot(data[i])
@@ -94,7 +148,7 @@ def plot_mutliple_lines(data, title, x_label, y_label, legend, save=False, model
         current_folder = os.path.dirname(os.path.realpath(__file__))
         file_path = current_folder + "/results/" + file_name + ".png"
         plt.savefig(file_path)
-    plt.show()
+    #plt.show()
 
 
 def generate_date_name(name):
