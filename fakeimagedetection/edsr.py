@@ -201,6 +201,25 @@ class EDSR(nn.Module):
 
 
 def load(model, pre_train="download", resume=0, cpu=False):
+    """
+    Loads model with weight
+
+    Parameters
+    ----------
+    model : pytorch model
+        model object.
+    pre_train : str, optional
+        pretrained or not. The default is "download".
+    resume : int, optional
+        resume training or not. The default is 0.
+    cpu : bool, optional
+        machine type. The default is False.
+
+    Returns
+    -------
+    None.
+
+    """
     load_from = None
     kwargs = {}
     ssl._create_default_https_context = ssl._create_unverified_context
@@ -218,7 +237,8 @@ def load(model, pre_train="download", resume=0, cpu=False):
         load_from = torch.load(pre_train, **kwargs)
     if load_from:
         model.load_state_dict(load_from, strict=False)
-        
+
+
 def load_edsr(device, n_resblocks=16, n_feats=64, scale=4, model_details=True):
     """
     Loads the EDSR model

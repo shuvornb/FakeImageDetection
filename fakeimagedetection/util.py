@@ -15,6 +15,22 @@ from keras.applications.xception import preprocess_input
 
 
 def upsample_image(image, scale=4):
+    """
+    Upsample a single image
+
+    Parameters
+    ----------
+    image : tensor
+        image.
+    scale : int, optional
+        scal value. The default is 4.
+
+    Returns
+    -------
+    sr_image : tensor
+        enlarged image.
+
+    """
     model = edsr.load_edsr(device="cuda", scale=scale)
     image = image.to("cuda")
     model.eval()
@@ -27,16 +43,30 @@ def upsample_image(image, scale=4):
 
 
 def get_upsampled(data_path):
+    """
+    Upsample a given image with EDSR
+
+    Parameters
+    ----------
+    data_path : str
+        image set path.
+
+    Returns
+    -------
+    upsampled_path : str
+        upsampled path.
+
+    """
     src_path = data_path
     file_names = []
     train_data = []
 
-    upsampled_path = os.path.join('/'.join(src_path.split('/')[0:-1]), 'upsampled')
+    upsampled_path = os.path.join("/".join(src_path.split("/")[0:-1]), "upsampled")
     os.mkdir(upsampled_path)
     model = edsr.load_edsr(device="cuda", scale=4)
     model.eval()
     counter = 0
-    print('Upsampling images...')
+    print("Upsampling images...")
     for e in os.listdir(src_path):
         new_path = os.path.join(upsampled_path, e)
         os.mkdir(new_path)
@@ -63,37 +93,84 @@ def get_upsampled(data_path):
     model.cpu()
     del model
 
-    print('Total upsampled images: ', counter)
+    print("Total upsampled images: ", counter)
     return upsampled_path
 
 
-def generate_from_paths_and_labels(input_paths, labels, batch_size, input_size=(256, 256)):
+def generate_from_paths_and_labels(
+    input_paths, labels, batch_size, input_size=(256, 256)
+):
+    """
+    Batches images
+
+    Parameters
+    ----------
+    input_paths : list
+        input image path list.
+    labels : list
+        list of labels.
+    batch_size : int
+        batch size.
+    input_size : tuple, optional
+        input shape. The default is (256, 256).
+
+    Yields
+    ------
+    inputs : data iterator
+        images.
+    labels: data iterator
+        labels.
+
+    """
     num_samples = len(input_paths)
     while 1:
         perm = np.random.permutation(num_samples)
         input_paths = input_paths[perm]
         labels = labels[perm]
         for i in range(0, num_samples, batch_size):
-            inputs = list(map(
-                lambda x: image.load_img(x, target_size=input_size),
-                input_paths[i:i+batch_size]
-            ))
-            inputs = np.array(list(map(
-                lambda x: image.img_to_array(x),
-                inputs
-            )))
+            inputs = list(
+                map(
+                    lambda x: image.load_img(x, target_size=input_size),
+                    input_paths[i : i + batch_size],
+                )
+            )
+            inputs = np.array(list(map(lambda x: image.img_to_array(x), inputs)))
             inputs = preprocess_input(inputs)
-            yield inputs, labels[i:i + batch_size]
+            yield inputs, labels[i : i + batch_size]
 
 
 def batch_data(
-        folder_path,
-        target_size,
-        batch_size,
-        color_mode="rgb",
-        class_mode="binary",
-        shuffle=True,
+    folder_path,
+    target_size,
+    batch_size,
+    color_mode="rgb",
+    class_mode="binary",
+    shuffle=True,
 ):
+    """
+    Batches data
+
+    Parameters
+    ----------
+    folder_path : str
+        image folder.
+    target_size : str
+        target sized.
+    batch_size : str
+        batch size.
+    color_mode : str, optional
+        image colo type. The default is "rgb".
+    class_mode : str, optional
+        class type. The default is "binary".
+    shuffle : bool, optional
+        shuffle data or not. The default is True.
+
+    Returns
+    -------
+    batches : TYPE
+        DESCRIPTION.
+
+    """
     data_generator = ImageDataGenerator(rescale=1.0 / 255)
     batches = data_generator.flow_from_directory(
         folder_path,
@@ -107,6 +184,22 @@ def batch_data(
 
 
 def batch_data_xception(dataset_root):
+    """
+    Returns the list of images and labels
+
+    Parameters
+    ----------
+    dataset_root : str
+        data path.
+
+    Returns
+    -------
+    input_paths : list
+        input image path list.
+    labels : list
+        categorical list.
+
+    """
     classes = ["fake", "real"]
     num_classes = len(classes)
 
@@ -136,7 +229,37 @@ def batch_data_xception(dataset_root):
     return input_paths, labels
 
 
-def plot_mutliple_lines(data, title, x_label, y_label, legend, save=False, model_name="", data_name=""):
+def plot_mutliple_lines(
+    data, title, x_label, y_label, legend, save=False, model_name="", data_name=""
+):
+    """
+    Plotter
+
+    Parameters
+    ----------
+    data : list
+        data to plot.
+    title : str
+        plot title.
+    x_label : str
+        x label.
+    y_label : str
+        y label.
+    legend : str
+        plot legend.
+    save : bool, optional
+        save png or not. The default is False.
+    model_name : str, optional
+        model name. The default is "".
+    data_name : str, optional
+        manipulation type. The default is "".
+
+    Returns
+    -------
+    None.
+
+    """
+
     for i in range(len(data)):
         plt.plot(data[i])
     plt.title(title)
@@ -148,21 +271,60 @@ def plot_mutliple_lines(data, title, x_label, y_label, legend, save=False, model
         current_folder = os.path.dirname(os.path.realpath(__file__))
         file_path = current_folder + "/results/" + file_name + ".png"
         plt.savefig(file_path)
-    #plt.show()
+    plt.show()
 
 
 def generate_date_name(name):
+    """
+    Returns the name with current date stamp
+
+    Parameters
+    ----------
+    name : str
+        prefix.
+
+    Returns
+    -------
+    str
+        name with date.
+
+    """
     date = "_".join(str(time.ctime()).split())
     date = "_".join(date.split(":"))
     return name + "_" + date
 
 
 def get_gpu_details():
+    """
+    Print GPU details
+
+    Returns
+    -------
+    None.
+
+    """
     print(tf.config.list_physical_devices("GPU"))
     print("Num GPUs Available: ", len(tf.config.list_physical_devices("GPU")))
 
 
 def stats_to_csv(dictionary, model_name, data_name):
+    """
+    Saves a dictionary as a csv file
+
+    Parameters
+    ----------
+    dictionary : dict
+        ckey as column name and value as column.
+    model_name : str
+        model name.
+    data_name : str
+        deepfake manipulation name.
+
+    Returns
+    -------
+    None.
+
+    """
     data_frame = pd.DataFrame(dictionary)
     file_name = generate_date_name(model_name + "_" + data_name)
     current_folder = os.path.dirname(os.path.realpath(__file__))

@@ -6,6 +6,9 @@ from keras.applications.xception import Xception, preprocess_input
 
 
 def meso4_model():
+    """
+    Returns a Meso4 model
+    """
     model = models.Sequential()
 
     model.add(
@@ -38,16 +41,18 @@ def meso4_model():
 
 
 def xception():
+    """
+    Returns an Xception model
+    """
     base_model = Xception(
-        include_top=False,
-        weights='imagenet',
-        input_shape=(256, 256, 3))
+        include_top=False, weights="imagenet", input_shape=(256, 256, 3)
+    )
 
     # create a custom top classifier
     x = base_model.output
     x = GlobalAveragePooling2D()(x)
-    x = Dense(1024, activation='relu')(x)
-    predictions = Dense(2, activation='softmax')(x)
+    x = Dense(1024, activation="relu")(x)
+    predictions = Dense(2, activation="softmax")(x)
     model = Model(inputs=base_model.inputs, outputs=predictions)
 
     # Train only the top classifier
@@ -58,20 +63,23 @@ def xception():
 
 
 def xception_v2():
+    """
+    Returns an Xception model
+    """
     base_model = tf.keras.applications.xception.Xception(
-        include_top=False, weights="imagenet", input_shape=(256, 256, 3), pooling='avg'
+        include_top=False, weights="imagenet", input_shape=(256, 256, 3), pooling="avg"
     )
-    
+
     base_model.trainable = False
     for layer in base_model.layers:
-        if 'conv5' in layer.name:
+        if "conv5" in layer.name:
             layer.trainable = True
         else:
             layer.trainable = False
 
     x = base_model.output
     x = layers.Flatten()(x)
-    
+
     x = layers.BatchNormalization()(x)
     x = layers.Dense(
         units=1024,  # was 256
@@ -88,7 +96,7 @@ def xception_v2():
     )(x)
 
     x = layers.Dropout(0.4)(x)  # was 0.4
-    
+
     x = layers.Dense(
         units=1,  # was 10
         activation="sigmoid",
@@ -105,18 +113,21 @@ def xception_v2():
 
 
 def vgg():
+    """
+    Returns a VGG model
+    """
     base_model = tf.keras.applications.vgg19.VGG19(
-        input_shape=(256, 256, 3), include_top=False, weights="imagenet", pooling='avg'
+        input_shape=(256, 256, 3), include_top=False, weights="imagenet", pooling="avg"
     )
     base_model.trainable = False
     for layer in base_model.layers:
-        if 'conv5' in layer.name:
+        if "conv5" in layer.name:
             layer.trainable = True
         else:
             layer.trainable = False
     x = base_model.output
     x = layers.Flatten()(x)
-    
+
     x = layers.BatchNormalization()(x)
     x = layers.Dense(
         units=1024,  # was 256
@@ -133,7 +144,7 @@ def vgg():
     )(x)
 
     x = layers.Dropout(0.4)(x)  # was 0.4
-    
+
     x = layers.Dense(
         units=1,  # was 10
         activation="sigmoid",
@@ -150,13 +161,16 @@ def vgg():
 
 
 def resnet():
+    """
+    Returns a Resnet model
+    """
     base_model = tf.keras.applications.resnet.ResNet50(
-        include_top=False, input_shape=(256, 256, 3), weights="imagenet", pooling='avg'
+        include_top=False, input_shape=(256, 256, 3), weights="imagenet", pooling="avg"
     )
 
     base_model.trainable = False
     for layer in base_model.layers:
-        if 'conv5' in layer.name:
+        if "conv5" in layer.name:
             layer.trainable = True
         else:
             layer.trainable = False
@@ -195,6 +209,20 @@ def resnet():
 
 
 def load_model(model_name):
+    """
+    Model laoder
+
+    Parameters
+    ----------
+    model_name : str
+        model name.
+
+    Returns
+    -------
+    pytorhc model
+        model object.
+
+    """
     if model_name.lower() == "meso4":
         model = meso4_model()
     elif model_name.lower() == "xception":
