@@ -1,5 +1,5 @@
 # Deep Fake Detection
-Contains code for deep fake Detection
+The rapid progress in synthetic image generation and manipulation has now come to a point where it raises significant concerns on the social implications. This not only leads to a loss of trust in digital content, but also causes further harm by spreading false information. We are confronted today with manipulated visual content in almost any digital medium. Images and videos particularly of human faces are also victim of these manipulations. We have seen such manipulations to alter political leader’s speech jeopardizing the reputation of a nation. We have seen such manipulations being used to make revenge porn in last few years. With the development of more and more advanced techniques, fake contents are getting closer to real ones creating a severe threat. So, detection of these forgeries is of paramount importance. A lot of researchers have already addressed the problem from different perspectives. We explored the problem from two aspects. (a) Performance of fake detection models on generalizability (b) Performance of fake detection models on low resolution data. We conduct experiments to confirm the first observation. For the second one, we provide an improved model which yields a maximum of 34\% improvement in the test accuracy.
 
 # Installation
 ```bash
