@@ -3,3 +3,9 @@ fakeimagedetection/results/*
 .idea
 .spyproject
 fakeimagedetection/data/*
+fakeimagedetection/data0/*
+fakeimagedetection/data_64/*
+fakeimagedetection/data_shuffled/*
+fakeimagedetection/result/*
+data_gen.sh
+fakeimagedetection/__pycache__/*
