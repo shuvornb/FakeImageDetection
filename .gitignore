@@ -1,5 +1,3 @@
-fakeimagedetection/saved_models/*
-fakeimagedetection/results/*
 .idea
 .spyproject
 fakeimagedetection/data/*
