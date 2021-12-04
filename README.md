@@ -10,6 +10,10 @@ To install required library-
 pip install -r requirements.txt
 pip3 install torch==1.10.0+cu113 torchvision==0.11.1+cu113 torchaudio==0.10.0+cu113 -f https://download.pytorch.org/whl/cu113/torch_stable.html
 ```
+# How to download the actual dataset: 
+We have provided some sample data in our sample_data folder but to train and test on actual data one can refer to this link:
+https://github.com/ondyari/FaceForensics/tree/master/dataset 
+
 
 # How to run the experiments:
 
