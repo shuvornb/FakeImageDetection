@@ -31,6 +31,7 @@ confirm the first observation. For the second one, we provide
 a solution that yields a maximum of 35% improvement in the
 test accuracy.
 
+
 # Installation
 ```bash
 git clone https://github.com/shuvornb/FakeImageDetection.git
@@ -43,6 +44,10 @@ pip3 install torch==1.10.0+cu113 torchvision==0.11.1+cu113 torchaudio==0.10.0+cu
 # How to download the actual dataset: 
 We have provided some sample data in our sample_data folder but to train and test on actual data one can refer to this link:
 https://github.com/ondyari/FaceForensics/tree/master/dataset 
+
+# Results
+<img src="images/data_samples.png" width="50%">
+<img src="images/XceptionEDSR.png" width="50%">
 
 
 # How to run the experiments:
